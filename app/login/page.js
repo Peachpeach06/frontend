@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -71,6 +71,7 @@ const Modal = ({ isOpen, onClose, type, title, message }) => {
 };
 
 export default function Login() {
+    const router = useRouter();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -121,11 +122,14 @@ export default function Login() {
     }
   };
 
-  const router = useRouter();
-  const token = localStorage.getItem("token");
-  if (token) {
-    router.push("/admin/users");
-  }
+
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/admin/users");
+    }
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};

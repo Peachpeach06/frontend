@@ -315,6 +315,7 @@ const EditModal = ({ isOpen, onClose, onSave, user }) => {
 };
 
 export default function Users() {
+    const router = useRouter();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState({
@@ -332,12 +333,14 @@ export default function Users() {
     isOpen: false,
     user: null,
   });
-  const router = useRouter();
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    router.push("/login");
-  }
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
 
   const showModal = (type, title, message) => {
     setModal({

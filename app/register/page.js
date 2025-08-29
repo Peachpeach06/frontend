@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -71,6 +71,7 @@ const Modal = ({ isOpen, onClose, type, title, message }) => {
 };
 
 export default function Register() {
+    const router = useRouter();
   const [formData, setFormData] = useState({
     firstname: "",
     fullname: "",
@@ -150,12 +151,14 @@ export default function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const router = useRouter();
 
-  const token = localStorage.getItem("token");
-  if (token) {
-    router.push("/admin/users");
-  }
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/admin/users");
+    }
+  }, []);
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
