@@ -1,9 +1,11 @@
-import Image from "next/image";
+import Cards from "./components/Card";
+import Carousel from "./components/Carousel";
 
 export default function Home() {
   return (
-    <div>
-      <h1>Khanathip Thandee 004</h1>
-    </div>
+    <>
+      <Carousel />
+      <Cards />
+    </>
   );
 }
