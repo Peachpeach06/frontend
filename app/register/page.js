@@ -167,7 +167,7 @@ export default function Register() {
 
     try {
       const response = await fetch(
-        "https://backend-nextjs-virid.vercel.app/api/users",
+        "https://food-backend-three-topaz.vercel.app/api/users",
         {
           method: "POST",
           headers: {

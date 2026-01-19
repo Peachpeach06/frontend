@@ -133,6 +133,19 @@ const EditModal = ({ isOpen, onClose, onSave, user }) => {
 
   useEffect(() => {
     if (user) {
+      // แปลงวันที่เป็น YYYY-MM-DD สำหรับ input type="date"
+      let formattedBirthday = "";
+      if (user.birthday) {
+        try {
+          formattedBirthday = new Date(user.birthday)
+            .toISOString()
+            .split("T")[0];
+        } catch (e) {
+          console.error("Invalid date format", e);
+          formattedBirthday = "";
+        }
+      }
+
       setFormData({
         id: user.id,
         firstname: user.firstname,
@@ -142,7 +155,7 @@ const EditModal = ({ isOpen, onClose, onSave, user }) => {
         password: user.password,
         address: user.address,
         sex: user.sex,
-        birthday: user.birthday,
+        birthday: formattedBirthday,
       });
     }
   }, [user]);
@@ -315,7 +328,7 @@ const EditModal = ({ isOpen, onClose, onSave, user }) => {
 };
 
 export default function Users() {
-    const router = useRouter();
+  const router = useRouter();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState({
@@ -333,7 +346,6 @@ export default function Users() {
     isOpen: false,
     user: null,
   });
-
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -363,8 +375,14 @@ export default function Users() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
       const response = await fetch(
-        "https://backend-nextjs-virid.vercel.app/api/users"
+        "https://food-backend-three-topaz.vercel.app/api/users",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       if (response.ok) {
         const data = await response.json();
@@ -377,7 +395,7 @@ export default function Users() {
       showModal(
         "error",
         "เกิดข้อผิดพลาด",
-        "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้"
+        "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้",
       );
     } finally {
       setLoading(false);
@@ -386,11 +404,15 @@ export default function Users() {
 
   const handleDelete = async (userId) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(
-        `https://backend-nextjs-virid.vercel.app/api/users/${userId}`,
+        `https://food-backend-three-topaz.vercel.app/api/users/${userId}`,
         {
           method: "DELETE",
-        }
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
 
       if (response.ok) {
@@ -401,7 +423,7 @@ export default function Users() {
         showModal(
           "error",
           "เกิดข้อผิดพลาด",
-          error.message || "ไม่สามารถลบข้อมูลได้"
+          error.message || "ไม่สามารถลบข้อมูลได้",
         );
       }
     } catch (error) {
@@ -409,22 +431,25 @@ export default function Users() {
       showModal(
         "error",
         "เกิดข้อผิดพลาด",
-        "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้"
+        "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้",
       );
     }
   };
 
   const handleEdit = async (formData) => {
     try {
+      const token = localStorage.getItem("token");
+      // แก้ไข: ส่ง ID ผ่าน URL Parameter (${formData.id})
       const response = await fetch(
-        `https://backend-nextjs-virid.vercel.app/api/users`, // ไม่ต้องใช้ /:id
+        `https://food-backend-three-topaz.vercel.app/api/users/${formData.id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData), // formData มี id อยู่แล้ว
-        }
+          body: JSON.stringify(formData),
+        },
       );
 
       if (response.ok) {
@@ -436,7 +461,7 @@ export default function Users() {
         showModal(
           "error",
           "เกิดข้อผิดพลาด",
-          error.message || "ไม่สามารถแก้ไขข้อมูลได้"
+          error.message || "ไม่สามารถแก้ไขข้อมูลได้",
         );
       }
     } catch (error) {
@@ -444,7 +469,7 @@ export default function Users() {
       showModal(
         "error",
         "เกิดข้อผิดพลาด",
-        "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้"
+        "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้",
       );
     }
   };
@@ -618,7 +643,7 @@ export default function Users() {
                           <span className="text-gray-900">
                             {user.birthday
                               ? new Date(user.birthday).toLocaleDateString(
-                                  "th-TH"
+                                  "th-TH",
                                 )
                               : "-"}
                           </span>
